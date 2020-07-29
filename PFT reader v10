@@ -1,0 +1,340 @@
+<html><body>
+
+<script>
+
+function func()
+{
+
+	var textArea = document.getElementById('data');
+	var lines = textArea.value.split('\n');    // lines is an array of strings
+
+	// Loop through all lines making each line its own string
+	for (var j = 0; j < lines.length; j++) 
+	{
+  		console.log('Line ' + j + ' is ' + lines[j])
+  
+  
+		if (lines[j].startsWith("FVC")) {var FVC=lines[j] }
+
+		if (lines[j].startsWith("FEV1 ")) {var FEV1=lines[j] }
+
+		if (lines[j].startsWith("FEV1/FVC")) {var ratio=lines[j] }
+
+if (lines[j].startsWith("TLC")) {var TLC=lines[j] }
+
+// nitrogen washout name 
+if (lines[j].startsWith("TLC_N2")) {var TLC=lines[j] }
+
+if (lines[j].startsWith("RV L")) {var RV=lines[j] }
+
+if (lines[j].startsWith("RV_N2 ")) {var RV=lines[j] }
+
+if (lines[j].startsWith("RV %")) {var RVTLC=lines[j] }
+  
+if (lines[j].startsWith("RV_N2/TLC_N2")) {var RVTLC=lines[j] }
+
+if (lines[j].startsWith("DLCO_SB")) {var DLCO=lines[j] }
+  
+if (lines[j].startsWith("DLCOcSB")) {var DLCOHgb=lines[j] }
+
+  }
+
+
+var check = [];
+
+
+//calculate FVC
+
+var resFVC = FVC.split(" ");
+var output1 = [] ;
+
+
+if (resFVC.length>9) 
+{ if (resFVC[3]>resFVC[8]) 
+{output1 = "Forced vital capacity (FVC) is normal."}
+else {output1 = "Forced vital capacity (FVC) is decreased."} 
+document.getElementById("FVC").innerHTML = output1; }
+else if (resFVC[3]>resFVC[5]) 
+{output1 = "Forced vital capacity (FVC) is normal."}
+else {output1 = "Forced vital capacity (FVC) is decreased."} 
+document.getElementById("FVC").innerHTML = output1;
+
+
+
+var resFEV1 = FEV1.split(" ");
+var output2 = [] ;
+
+if (resFEV1.length>9)
+	{ if (resFEV1[3]>resFEV1[8]) 
+		{output2 = "Forced expiratory volume in one second (FEV1) is normal."}
+		else {output2 = "Forced expiratory volume in one second (FEV1) is decreased."} 
+		document.getElementById("FEV1").innerHTML = output2;
+	}
+else 
+if (resFEV1[3]>resFEV1[5]) 
+	{output2 = "Forced expiratory volume in one second (FEV1) is normal."}
+else {output2 = "Forced expiratory volume in one second (FEV1) is decreased."} 
+document.getElementById("FEV1").innerHTML = output2;
+
+
+var resRatio = ratio.split(" ");
+var output3 = [];
+
+if (resRatio.length>9)
+{if (resRatio[3]>resRatio[8])
+{output3= "FEV1/FVC is normal."}
+else {output3 = "FEV1/FVC is decreased."}
+document.getElementById("ratio").innerHTML = output3;}
+else
+if (resRatio[3]>resRatio[5])
+{output3= "FEV1/FVC is normal."}
+else {output3 = "FEV1/FVC is decreased."}
+document.getElementById("ratio").innerHTML = output3;
+
+
+
+var outputBronchodilator = [];
+if (resRatio.length>9)
+{
+	if (parseFloat(resFEV1[5])-parseFloat(resFEV1[2])>=0.2 && parseFloat(resFEV1[6])-parseFloat(resFEV1[4])>=12)
+	{outputBronchodilator = "There is significant improvement after administration of an inhaled bronchodilator."}
+	else {outputBronchodilator = "There is no significant improvement after administration of an inhaled bronchodilator. The lack of response to a single dose of an inhaled bronchodilator does not necessarily indicate irreversible airway obstruction."}
+}
+else {outputBronchodilator = ""}
+
+document.getElementById("bronchodilator").innerHTML = outputBronchodilator;
+
+var resTLC = TLC.split(" ");
+var output4 = [];
+if (resTLC[3]<resTLC[5])
+	{output4 = "Total lung capacity (TLC) is decreased."}
+	else if (resTLC[3]>resTLC[6])
+	{output4= "Total lung capacity (TLC) is increased. "}
+else 
+	{output4= "Total lung capacity (TLC) is normal."};
+document.getElementById("TLC").innerHTML = output4;
+
+
+var resRV = RV.split(" ");
+var output5 = [];
+if (resRV[3]<resRV[5])
+	{output5 = "Residual volume (RV) is decreased."}
+	else if (resRV[3]>resRV[6])
+	{output5 = "Residual volume (RV) is increased."}
+	else {output5 = "Residual volume (RV) is normal."};
+document.getElementById("RV").innerHTML = output5;
+
+
+var resRVTLC = RVTLC.split(" ");
+var output6 = [];
+if (resRVTLC[5]>resRVTLC[8])
+{output6 = "RV/TLC is increased."}
+else {output6 = " "};
+document.getElementById("RVTLC").innerHTML = output6;
+
+
+// flow volume loops - narrowed, scooped
+
+var flowloop = [];
+var flowloop2 = [];
+
+if (output3 == "FEV1/FVC is decreased.")
+	{flowloop2 = "Scooped."}
+	else { flowloop2 = "Normal."};
+
+if (resTLC[3]<resTLC[5])
+	{ flowloop = "Narrowed."}
+	else { };
+
+
+document.getElementById("loop").innerHTML = flowloop;
+
+document.getElementById("loop2").innerHTML = flowloop2;
+
+
+
+// DLCO 
+
+
+var resDLCO = DLCO.split(" ");
+var output7 = [];
+
+var resDLCOHgb = DLCOHgb.split(" ");
+var output8 = [];
+
+
+if (resDLCOHgb[3]==resDLCO[3])
+{output8 = "The diffusing capacity was not adjusted for the patient's hemoglobin."}
+else {output8 = "The diffusing capacity was adjusted for the patient's hemoglobin."}
+document.getElementById("DLCOadj").innerHTML = output8;
+
+
+
+var output9=[];
+
+if ( parseFloat(resDLCOHgb[3]) <= parseFloat(resDLCOHgb[5]) )
+{
+	var DLCOsev = resDLCOHgb[4];
+	output9 = [];
+	if (DLCOsev >= 60) {output9 = "Diffusing capacity is mildly decreased (>60%)."}
+	else if (DLCOsev < 40) {output9 = "Diffusing capacity is severely decreased (<40%)."}
+	else {output9 = "Diffusing capacity is moderately decreased (40-60%)."}
+	output7 = "";
+}
+else if (resDLCO[3]>resDLCO[6])
+{output7 = "Diffusing capacity is increased.";
+output9="";}
+else {output7 = "Diffusing capacity is normal.";
+output9="";};
+
+document.getElementById("DLCO").innerHTML = output7;
+document.getElementById("DLCOsev").innerHTML = output9;
+
+
+
+
+var output10 = [];
+var output11 = [];
+var output12 = [];
+
+var FEV1sev = parseFloat(resFEV1[4]);
+var check = FEV1sev;
+
+document.getElementById("check").innerHTML = check;
+
+//long
+if (resRatio.length>9)
+	{
+		if (resRatio[3]<resRatio[8])
+		
+			{output10="There is an obstructive deficit.";
+			if ( FEV1sev >= 70) 	{output11 = "Severity: mild (>70%)."}
+			else if (FEV1sev<=69 && FEV1sev>=60) {output11 = "Severity: moderate (60-69%)."}
+			else if (FEV1sev<=59 && FEV1sev>=50) {output11 = "Severity: moderate-severe (50-59%)."}
+			else if (FEV1sev<=49 && FEV1sev>=35) {output11 = "Severity: severe (35-50%)."}
+			else {output11 = "Severity: very severe (<35%)."}
+			}
+		else {output10="There is no obstructive deficit."}
+	}
+	//short
+else
+	if (resRatio[3]>resRatio[5])
+	{output10="There is no obstructive deficit."} 
+else 
+	if (resRatio[3]<resRatio[5])
+		{output10="There is an obstructive deficit.";
+		if ( FEV1sev >= 70) 	{output11 = "Severity: mild (>70%)."}
+		else if (FEV1sev<=69 && FEV1sev>=60) {output11 = "Severity: moderate (60-69%)."}
+		else if (FEV1sev<=59 && FEV1sev>=50) {output11 = "Severity: moderate-severe (50-59%)."}
+		else if (FEV1sev<=49 && FEV1sev>=35) {output11 = "Severity: severe (35-50%)."}
+		else {output11 = "Severity: very severe (<35%)."}
+		}
+	
+
+
+document.getElementById("obs1").innerHTML = output10;
+document.getElementById("obs2").innerHTML = output11;
+
+
+	
+	
+if (resTLC[3]<resTLC[5]) 
+	{output12= "There is a restrictive deficit.";
+		if ( FEV1sev >= 70) 	{output11 = "Severity: mild (>70%)."}
+		else if (FEV1sev<=69 && FEV1sev>=60) {output11 = "Severity: moderate (60-69%)."}
+		else if (FEV1sev<=59 && FEV1sev>=50) {output11 = "Severity: moderate-severe (50-59%)."}
+		else if (FEV1sev<=49 && FEV1sev>=35) {output11 = "Severity: severe (35-50%)."}
+		else {output11 = "Severity: very severe (<35%)."}
+	}
+else {output12="There is no restrictive deficit."}
+
+
+document.getElementById("obs2").innerHTML = output11;
+
+
+
+document.getElementById("obs3").innerHTML = output12;
+
+
+
+document.getElementById("DLCO2").innerHTML = output7;
+document.getElementById("DLCOsev2").innerHTML = output9;
+
+var output13=[];
+
+if ( parseFloat(resDLCOHgb[3]) <= parseFloat(resDLCOHgb[5]) )
+{ output13 = "The decrease in diffusing capacity reflects the loss of pulmonary capillary surface area, as may be seen in emphysema, interstitial lung disease, and pulmonary vascular disease (including pulmonary emboli and pulmonary hypertension), anemia, liver disease and OSA."}
+else {output13=""};
+
+document.getElementById("DLCOddx").innerHTML = output13;
+
+
+
+}
+
+
+</script>
+
+
+<div style="float: left; width: 50%;">
+Paste PFT data here:<br>
+<textarea id="data" style="white-space:pre;font-size:10pt;height:200px" size="40" 
+
+wrap="off"></textarea>
+
+<p><button onclick="func()">Then click this to interpret</button>
+
+<p>
+Check: <p id="check"></p>
+
+</div>
+
+<div style="float: right; width: 50%;">
+<P>
+
+Results: <P>
+
+MECHANICS: 
+<p id="FVC"></p>
+<p id="FEV1"></p>
+<p id="ratio"></p>
+<p id="bronchodilator"></p>
+
+FLOW VOLUME LOOP: <P>
+<p id="loop"></p>
+<p id="loop2"></p>
+
+LUNG VOLUMES: <P>
+<p id="TLC"></p>
+<p id="RV"></p>
+<p id= "RVTLC"></p>
+
+DIFFUSING CAPACITY FOR CARBON MONOXIDE: <P>
+<p id="DLCO"></p>
+<p id="DLCOadj"></p>
+<p id="DLCOsev"></p>
+ 
+
+INTERPRETATION:<P>
+
+<p id ="obs1"></p>
+<p id ="obs3"></p>
+<p id ="obs2"></p>
+
+<p id="DLCO2"></p>
+<p id="DLCOadj2"></p>
+<p id="DLCOsev2"></p>
+
+<p id="DLCOddx"></p>
+
+
+
+Resting sat: ***<P>
+
+Previous studies: ***<P>
+
+
+<P>
+</div>
+
+</body></html>
